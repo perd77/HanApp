@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="off_white_surface">#F7FAFC</color>
+
+    <color name="sky_blue">#7EC8E3</color>
+    <color name="sky_blue_dark">#5AB8DB</color>
+    <color name="sky_blue_light">#E3F4FA</color>
+
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="divider">#E8ECEF</color>
+
+    <color name="status_unclaimed">#3EAE6B</color>
+    <color name="status_claimed">#E15252</color>
+
+    <color name="sky_blue_deep_text">#EAF6FC</color>
+
+    <color name="tab_ripple">#33FFFFFF</color>
+</resources>

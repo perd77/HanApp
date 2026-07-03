@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card"
+    android:padding="16dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imageItemPhoto"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/sky_blue_light"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/item_photo_description"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintWidth_percent="0.22"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:shapeAppearanceOverlay="@style/RoundedImageCorners" />
+
+    <TextView
+        android:id="@+id/textItemName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_semibold"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintStart_toEndOf="@id/imageItemPhoto"
+        app:layout_constraintTop_toTopOf="@id/imageItemPhoto"
+        app:layout_constraintEnd_toStartOf="@id/badgeStatus"
+        tools:text="Blue Backpack" />
+
+    <TextView
+        android:id="@+id/badgeStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_badge_unclaimed"
+        android:fontFamily="@font/inter_medium"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:textColor="@color/status_unclaimed"
+        android:textSize="11sp"
+        app:layout_constraintTop_toTopOf="@id/textItemName"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Unclaimed" />
+
+    <TextView
+        android:id="@+id/textItemDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        app:layout_constraintStart_toStartOf="@id/textItemName"
+        app:layout_constraintTop_toBottomOf="@id/textItemName"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Found near the library entrance, has a small keychain attached." />
+
+    <TextView
+        android:id="@+id/tagCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_tag_neutral"
+        android:fontFamily="@font/inter_medium"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:textColor="@color/sky_blue_dark"
+        android:textSize="11sp"
+        app:layout_constraintStart_toStartOf="@id/textItemName"
+        app:layout_constraintTop_toBottomOf="@id/textItemDescription"
+        tools:text="Bag" />
+
+    <TextView
+        android:id="@+id/textTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@id/tagCategory"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tagCategory"
+        tools:text="2h ago" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
