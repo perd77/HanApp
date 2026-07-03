@@ -1,97 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Root card container. Vertical stack: large photo on top, text content below. -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
     android:background="@drawable/bg_card"
-    android:padding="16dp">
+    android:padding="12dp">
 
+    <!-- Large, near-square photo area. Dominates the top of the card so the item is
+         instantly recognizable. Width fills the card; height is driven by a 4:3 ratio. -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageItemPhoto"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="12dp"
         android:background="@color/sky_blue_light"
         android:scaleType="centerCrop"
         android:contentDescription="@string/item_photo_description"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintWidth_percent="0.22"
+        app:layout_constraintDimensionRatio="H,4:3"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:shapeAppearanceOverlay="@style/RoundedImageCorners" />
 
-    <TextView
-        android:id="@+id/textItemName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_semibold"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        app:layout_constraintStart_toEndOf="@id/imageItemPhoto"
-        app:layout_constraintTop_toTopOf="@id/imageItemPhoto"
-        app:layout_constraintEnd_toStartOf="@id/badgeStatus"
-        tools:text="Blue Backpack" />
-
+    <!-- Status badge (Unclaimed/Claimed) floats over the top-right corner of the photo,
+         so status is visible at a glance without taking a separate row. -->
     <TextView
         android:id="@+id/badgeStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:background="@drawable/bg_badge_unclaimed"
         android:fontFamily="@font/inter_medium"
         android:paddingHorizontal="10dp"
         android:paddingVertical="4dp"
         android:textColor="@color/status_unclaimed"
         android:textSize="11sp"
-        app:layout_constraintTop_toTopOf="@id/textItemName"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imageItemPhoto"
+        app:layout_constraintEnd_toEndOf="@id/imageItemPhoto"
         tools:text="Unclaimed" />
 
+    <!-- Item name: the primary label, sits directly under the photo. -->
     <TextView
-        android:id="@+id/textItemDescription"
+        android:id="@+id/textItemName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:fontFamily="@font/inter_regular"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:maxLines="2"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/inter_semibold"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        android:maxLines="1"
         android:ellipsize="end"
-        app:layout_constraintStart_toStartOf="@id/textItemName"
-        app:layout_constraintTop_toBottomOf="@id/textItemName"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Found near the library entrance, has a small keychain attached." />
+        app:layout_constraintTop_toBottomOf="@id/imageItemPhoto"
+        tools:text="Blue Backpack" />
 
+    <!-- Category + location tags row, sits just under the name for quick context. -->
     <TextView
         android:id="@+id/tagCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_tag_neutral"
         android:fontFamily="@font/inter_medium"
         android:paddingHorizontal="10dp"
-        android:paddingVertical="4dp"
+        android:paddingVertical="3dp"
         android:textColor="@color/sky_blue_dark"
         android:textSize="11sp"
-        app:layout_constraintStart_toStartOf="@id/textItemName"
-        app:layout_constraintTop_toBottomOf="@id/textItemDescription"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textItemName"
         tools:text="Bag" />
 
+    <!-- Location tag sits to the right of the category tag on the same row. -->
+    <TextView
+        android:id="@+id/tagLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/bg_tag_neutral"
+        android:fontFamily="@font/inter_medium"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="3dp"
+        android:textColor="@color/sky_blue_dark"
+        android:textSize="11sp"
+        app:layout_constraintStart_toEndOf="@id/tagCategory"
+        app:layout_constraintTop_toTopOf="@id/tagCategory"
+        app:layout_constraintBottom_toBottomOf="@id/tagCategory"
+        tools:text="Library" />
+
+    <!-- Description: the detail text, placed at the bottom as requested.
+         Capped at 3 lines with ellipsis so long user text can't stretch the card. -->
+    <TextView
+        android:id="@+id/textItemDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/inter_regular"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:lineSpacingExtra="2dp"
+        android:maxLines="3"
+        android:ellipsize="end"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tagCategory"
+        tools:text="Found near the library entrance, has a small keychain attached to the side zipper." />
+
+    <!-- Timestamp: least important info, anchored bottom-right as a subtle footnote. -->
     <TextView
         android:id="@+id/textTimestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/text_secondary"
         android:textSize="11sp"
-        app:layout_constraintBottom_toBottomOf="@id/tagCategory"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tagCategory"
+        app:layout_constraintTop_toBottomOf="@id/textItemDescription"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="2h ago" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

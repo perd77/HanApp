@@ -11,15 +11,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HanApp">
+
+        <!-- LoginActivity is now the app's entry point (the LAUNCHER).
+             exported="true" is required because the launcher is started by the OS/home screen. -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MainActivity is launched internally from LoginActivity after a valid name is entered.
+             exported="false" because nothing outside the app should be able to open it directly. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
