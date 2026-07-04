@@ -6,6 +6,11 @@ enum class ItemStatus {
     CLAIMED
 }
 
+enum class PostType {
+    FOUND,
+    LOST
+}
+
 // Fixed category list matching the dropdown options defined in the system plan.
 // displayName is what the user sees; the enum name itself is what the code/API uses internally.
 enum class ItemCategory(val displayName: String) {
@@ -26,6 +31,7 @@ data class Item(
     val category: ItemCategory,
     val locationTag: String,
     val status: ItemStatus,
+    val postType: PostType, // FOUND (Discovered feed) or LOST (Finding feed)
     val timestampLabel: String, // pre-formatted display string, e.g. "2h ago"
     val photoUrl: String? = null // nullable because the photo upload is optional per the system plan
 ) {

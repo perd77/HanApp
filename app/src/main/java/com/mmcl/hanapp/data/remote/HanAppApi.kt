@@ -13,12 +13,13 @@ import retrofit2.http.Query
 // The table name is the path; filtering and sorting are done with query params.
 interface HanAppApi {
 
-    // GET the feed: only UNCLAIMED items, newest first, all columns.
-    // PostgREST filter syntax: "eq.UNCLAIMED" means "equals UNCLAIMED".
+    // GET a feed filtered by post type (FOUND for Discovered, LOST for Finding),
+    // newest first, all columns.
+    // PostgREST filter syntax: "eq.FOUND" means "equals FOUND".
     // "created_at.desc" sorts newest first; "*" selects all columns.
     @GET("items")
     suspend fun getItems(
-        @Query("status") status: String = "eq.UNCLAIMED",
+        @Query("post_type") postType: String,
         @Query("order") order: String = "created_at.desc",
         @Query("select") select: String = "*"
     ): Response<List<ItemDto>>

@@ -11,6 +11,7 @@ data class ItemDto(
     @SerializedName("description") val description: String,
     @SerializedName("category") val category: String,
     @SerializedName("location_tag") val locationTag: String,
+    @SerializedName("post_type") val postType: String,
     @SerializedName("status") val status: String,
     @SerializedName("posted_by") val postedBy: String,
     @SerializedName("photo_path") val photoPath: String?, // nullable: item may have no photo

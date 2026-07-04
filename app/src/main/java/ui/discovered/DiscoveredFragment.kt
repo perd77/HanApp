@@ -15,17 +15,22 @@ import com.mmcl.hanapp.databinding.FragmentDiscoveredBinding
 import com.mmcl.hanapp.ui.adapter.GridSpacingItemDecoration
 import com.mmcl.hanapp.ui.adapter.ItemAdapter
 import com.mmcl.hanapp.ui.feed.FeedViewModel
+import com.mmcl.hanapp.ui.feed.FeedViewModelFactory
+import com.mmcl.hanapp.ui.model.PostType
 import com.mmcl.hanapp.util.NetworkResult
 import kotlinx.coroutines.launch
 
-// The "Discovered" tab: shows the shared feed of found items pulled live from the backend.
+// The "Discovered" tab: shows the shared feed of FOUND items pulled live from the backend.
 class DiscoveredFragment : Fragment() {
 
     private var _binding: FragmentDiscoveredBinding? = null
     private val binding get() = _binding!!
 
-    // The ViewModel is scoped to this fragment and survives view recreation.
-    private val viewModel: FeedViewModel by viewModels()
+    // ViewModel is scoped to this fragment and survives view recreation.
+    // The factory passes PostType.FOUND so this feed only loads found items.
+    private val viewModel: FeedViewModel by viewModels {
+        FeedViewModelFactory(PostType.FOUND)
+    }
 
     private lateinit var itemAdapter: ItemAdapter
 
