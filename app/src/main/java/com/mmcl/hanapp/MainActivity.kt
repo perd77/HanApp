@@ -2,30 +2,28 @@ package com.mmcl.hanapp
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.fragment.app.commit
 import com.mmcl.hanapp.data.session.SessionManager
 import com.mmcl.hanapp.databinding.ActivityMainBinding
-import com.mmcl.hanapp.ui.discovered.DiscoveredFragment
-import com.mmcl.hanapp.ui.finding.FindingFragment
+import com.mmcl.hanapp.ui.home.HomeFragment
+import com.mmcl.hanapp.ui.notifications.NotificationsFragment
 
-// Main screen: hosts the two tabs (Discovered / Finding) and the logout control.
-class MainActivity : AppCompatActivity() {
+// App shell: hosts the bottom bar + docked FAB, and swaps the content area
+// between the Home feed and the Notifications screen.
+// Implements HomeFragment's callback so it can handle logout navigation.
+class MainActivity : AppCompatActivity(), HomeFragment.MainActivityCallback {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var session: SessionManager
-
-    private val tabTitles = arrayOf("Discovered", "Finding")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         session = SessionManager(this)
 
-        // Safety net: if somehow this screen is reached with no logged-in user
-        // (e.g. session cleared), bounce back to login rather than showing a broken state.
+        // Safety net: if reached without a logged-in user, bounce to login.
         if (!session.isLoggedIn()) {
             goToLogin()
             return
@@ -34,69 +32,54 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupTabs()
-        setupLogout()
+        // Show the Home feed by default on first launch (not on rotation, to
+        // avoid stacking duplicate fragments).
+        if (savedInstanceState == null) {
+            showFragment(HomeFragment.newInstance())
+        }
+
+        setupBottomNav()
+        setupFab()
     }
 
-    // Connects the tab strip to the swipeable pager.
-    private fun setupTabs() {
-        val adapter = NewsfeedPagerAdapter(this)
-        binding.viewPager.adapter = adapter
-        binding.viewPager.offscreenPageLimit = 1
-
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = tabTitles[position]
-        }.attach()
-    }
-
-    // Wires the header logout icon to a confirmation dialog before actually logging out.
-    private fun setupLogout() {
-        binding.buttonLogout.setOnClickListener {
-            showLogoutConfirmation()
+    // Switches the content area based on which bottom-bar item is tapped.
+    // Switches the content area based on which bottom-bar icon is tapped.
+    private fun setupBottomNav() {
+        binding.navHome.setOnClickListener {
+            showFragment(HomeFragment.newInstance())
+        }
+        binding.navNotifications.setOnClickListener {
+            showFragment(NotificationsFragment.newInstance())
         }
     }
 
-    // Asks the user to confirm, so an accidental tap doesn't wipe their session mid-use.
-    private fun showLogoutConfirmation() {
-        // Pass the custom dialog theme so the action buttons render in visible sky-blue.
-        AlertDialog.Builder(this, R.style.HanAppAlertDialog)
-            .setTitle(R.string.logout_dialog_title)
-            .setMessage(R.string.logout_dialog_message)
-            .setPositiveButton(R.string.logout_confirm) { _, _ ->
-                performLogout()
-            }
-            .setNegativeButton(R.string.logout_cancel, null)
-            .show()
+    // The docked "+" opens the post-creation flow. Placeholder for now until
+    // the post form screen exists.
+    private fun setupFab() {
+        binding.fabAdd.setOnClickListener {
+            // TODO: open the Post Item form once it's built.
+            Toast.makeText(this, "Post form coming soon", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    // Clears the session and returns to the login screen.
-    private fun performLogout() {
-        session.logout()
+    // Replaces whatever is in the content container with the given fragment.
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.commit {
+            replace(binding.navHostContainer.id, fragment)
+        }
+    }
+
+    // Called by HomeFragment after the user confirms logout.
+    override fun onLoggedOut() {
         goToLogin()
     }
 
-    // Sends the user to login and closes this screen so back-press can't return here
-    // while logged out.
+    // Sends the user back to login and clears the back stack so they can't
+    // navigate back into a logged-out session.
     private fun goToLogin() {
         val intent = Intent(this, LoginActivity::class.java)
-        // Clear the activity history so the app can't navigate "back" into a logged-out session.
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
-    }
-
-    // Supplies the two tab fragments to the pager.
-    private inner class NewsfeedPagerAdapter(activity: AppCompatActivity) :
-        FragmentStateAdapter(activity) {
-
-        override fun getItemCount(): Int = tabTitles.size
-
-        override fun createFragment(position: Int): Fragment {
-            return when (position) {
-                0 -> DiscoveredFragment.newInstance()
-                1 -> FindingFragment.newInstance()
-                else -> throw IllegalArgumentException("Invalid tab position: $position")
-            }
-        }
     }
 }

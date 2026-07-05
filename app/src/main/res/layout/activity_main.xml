@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- App shell: a fragment container fills the screen, with a BottomAppBar pinned
+     to the bottom and a FAB docked into its center notch. The visible tabs and
+     header now live inside HomeFragment, not here. -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,68 +9,75 @@
     android:layout_height="match_parent"
     android:background="@color/off_white_surface">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/sky_blue"
-        android:elevation="0dp"
-        app:liftOnScroll="true">
-
-        <!-- Header row: app title on the left, logout icon pinned to the right. -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="16dp">
-
-            <!-- App wordmark in the Chango display font. -->
-            <TextView
-                android:id="@+id/textAppTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="@string/app_name"
-                android:textColor="@color/white"
-                android:textSize="40sp"
-                android:letterSpacing="0.01"
-                app:fontFamily="@font/chango_regular" />
-
-            <!-- Logout / switch-user button, vertically centered against the title.
-                 Uses a borderless ripple background so it feels like a tappable icon, not a box. -->
-            <ImageButton
-                android:id="@+id/buttonLogout"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_logout"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="centerInside"
-                android:contentDescription="@string/logout_description" />
-        </RelativeLayout>
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/sky_blue"
-            app:tabIndicatorColor="@color/white"
-            app:tabIndicatorHeight="3dp"
-            app:tabIndicatorFullWidth="false"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/sky_blue_deep_text"
-            app:tabTextAppearance="@style/TabTextAppearance"
-            app:tabRippleColor="@android:color/transparent" />
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
+    <!-- Swappable content area. Home or Notifications fragments are shown here.
+         Bottom padding keeps content clear of the BottomAppBar. -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:paddingBottom="80dp" />
+
+    <!-- Bottom bar with a cradle (notch) cut out for the FAB.
+         fabCradleMargin / cornerRadius shape how the notch hugs the FAB. -->
+    <!-- Bottom bar with a cradle (notch) for the FAB, centered. -->
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="80dp"
+        android:layout_gravity="bottom"
+        android:backgroundTint="@color/bottom_bar_black"
+        app:fabAlignmentMode="center"
+        app:fabCradleMargin="10dp"
+        app:fabCradleRoundedCornerRadius="16dp"
+        app:fabCradleVerticalOffset="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="50dp"
+            android:paddingEnd="50dp">
+
+            <ImageButton
+                android:id="@+id/navHome"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:src="@drawable/ic_home"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:contentDescription="@string/nav_home"
+                app:tint="@color/bottom_bar_icon" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/navNotifications"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:src="@drawable/ic_notifications"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:contentDescription="@string/nav_notifications"
+                app:tint="@color/bottom_bar_icon" />
+
+        </LinearLayout>
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <!-- Docked "+" button. layout_anchor ties it to the bar; with
+         fabAlignmentMode="center" above, it sits in a center notch. -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add"
+        android:contentDescription="@string/fab_add_description"
+        app:backgroundTint="@color/sky_blue"
+        app:layout_anchor="@id/bottomAppBar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
