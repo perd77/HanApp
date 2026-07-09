@@ -28,6 +28,19 @@ object InputValidator {
         }
     }
 
+    // Validates a sign-up password. Supabase enforces a hard minimum of 6 characters
+// server-side — this can't be loosened below that, so we check it client-side too
+// for a faster, clearer error instead of a round trip to the server.
+    fun validatePassword(rawInput: String): Result {
+        return when {
+            rawInput.isEmpty() -> Result.Invalid("Please enter a password")
+            rawInput.length < MIN_PASSWORD_LENGTH -> Result.Invalid("Password must be at least 6 characters")
+            else -> Result.Valid
+        }
+    }
+
+    private const val MIN_PASSWORD_LENGTH = 6
+
     private const val MIN_NAME_LENGTH = 2
     private const val MAX_NAME_LENGTH = 30
 }

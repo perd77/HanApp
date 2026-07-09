@@ -5,8 +5,10 @@
     <string name="status_unclaimed">Unclaimed</string>
     <string name="status_claimed">Claimed</string>
     <string name="login_tagline">Campus Lost &amp; Found</string>
-    <string name="login_name_hint">Enter your name</string>
-    <string name="login_continue">Continue</string>
+    <string name="login_username_hint">Username</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">Log In</string>
+    <string name="login_go_to_signup">Don\'t have an account? Sign up</string>
     <string name="logout_description">Log out and switch user</string>
     <string name="logout_dialog_title">Switch user?</string>
     <string name="logout_dialog_message">You\'ll be returned to the login screen.</string>
@@ -18,4 +20,10 @@
     <string name="notifications_empty">No notifications yet</string>
     <color name="bottom_bar_black">#1A1A1A</color>
     <color name="bottom_bar_icon">#FFFFFF</color>
+    <string name="signup_tagline">Create your account</string>
+    <string name="signup_username_hint">Username</string>
+    <string name="signup_password_hint">Password (min. 6 characters)</string>
+    <string name="signup_create_account">Create Account</string>
+    <string name="signup_go_to_login">Already have an account? Log in</string>
+    <string name="signup_success">Account created! Please log in.</string>
 </resources>

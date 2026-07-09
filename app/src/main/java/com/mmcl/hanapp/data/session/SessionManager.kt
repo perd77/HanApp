@@ -3,37 +3,49 @@ package com.mmcl.hanapp.data.session
 import android.content.Context
 import androidx.core.content.edit
 
-// Stores the current user's name for the whole app session.
-// Backed by SharedPreferences so the identity survives app restarts, meaning the user
-// isn't forced to re-enter their name every time they open the app.
-//
-// NOTE: This is a deliberately simplified stand-in for real authentication so the project
-// can focus on the lost-and-found claim flow. In production, identity would be verified
-// against a server and never trusted from the client alone.
+// Stores the current authenticated session: a real access token issued by
+// Supabase, the refresh token, the account's user ID, and the display username.
+// This replaces the earlier name-only session with a genuinely verified identity.
 class SessionManager(context: Context) {
 
-    // Private preferences file scoped to this app only.
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    // Saves the logged-in user's name. Called once on successful login.
-    fun setCurrentUser(name: String) {
-        prefs.edit { putString(KEY_USERNAME, name) }
+    // Saves a full session after a successful sign-up or login.
+    fun saveSession(accessToken: String, refreshToken: String, userId: String, username: String) {
+        prefs.edit {
+            putString(KEY_ACCESS_TOKEN, accessToken)
+            putString(KEY_REFRESH_TOKEN, refreshToken)
+            putString(KEY_USER_ID, userId)
+            putString(KEY_USERNAME, username)
+        }
     }
 
-    // Returns the current user's name, or null if no one is logged in yet.
-    fun getCurrentUser(): String? = prefs.getString(KEY_USERNAME, null)
+    // The token that must be attached to every authenticated API request
+    // (used starting in the next batch, when we wire it into ApiClient).
+    fun getAccessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN, null)
 
-    // True if someone is currently logged in — used to decide whether to show
-    // the login screen or jump straight to the main tabs on app launch.
-    fun isLoggedIn(): Boolean = !getCurrentUser().isNullOrBlank()
+    fun getRefreshToken(): String? = prefs.getString(KEY_REFRESH_TOKEN, null)
 
-    // Clears the session. Wired to a future "switch user" / logout action.
+    // The real, database-enforceable identity — this is what RLS policies
+    // compare against via auth.uid().
+    fun getUserId(): String? = prefs.getString(KEY_USER_ID, null)
+
+    // The display name shown in the UI (e.g. on posted items).
+    fun getUsername(): String? = prefs.getString(KEY_USERNAME, null)
+
+    // True if there's a real, saved access token — i.e. a genuine active session.
+    fun isLoggedIn(): Boolean = !getAccessToken().isNullOrBlank()
+
+    // Clears the entire session on logout.
     fun logout() {
-        prefs.edit { remove(KEY_USERNAME) }
+        prefs.edit { clear() }
     }
 
     companion object {
         private const val PREFS_NAME = "hanapp_session"
-        private const val KEY_USERNAME = "current_username"
+        private const val KEY_ACCESS_TOKEN = "access_token"
+        private const val KEY_REFRESH_TOKEN = "refresh_token"
+        private const val KEY_USER_ID = "user_id"
+        private const val KEY_USERNAME = "username"
     }
 }
