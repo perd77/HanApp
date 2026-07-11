@@ -1,32 +1,41 @@
 package com.mmcl.hanapp.data.repository
 
 import com.mmcl.hanapp.data.remote.ApiClient
+import com.mmcl.hanapp.data.remote.dto.CreateClaimRequest
 import com.mmcl.hanapp.data.remote.dto.CreateItemRequest
 import com.mmcl.hanapp.data.remote.dto.toDomain
+import com.mmcl.hanapp.data.remote.dto.toNotificationClaim
 import com.mmcl.hanapp.ui.model.Item
+import com.mmcl.hanapp.ui.model.NotificationClaim
 import com.mmcl.hanapp.ui.model.PostType
 import com.mmcl.hanapp.util.NetworkResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.mmcl.hanapp.data.remote.dto.CreateClaimRequest
 
-// Single source of truth for item data, talking to Supabase's REST API.
 class ItemRepository {
 
     private val api = ApiClient.api
 
-    // Fetches a feed filtered by post type (FOUND for Discovered, LOST for Finding).
-    // Supabase returns a bare JSON array of items.
-    suspend fun getItems(postType: PostType): NetworkResult<List<Item>> =
+    // Fetches a feed filtered by post type. If ownerUserId is provided (My
+    // Posts mode), shows ALL of that user's posts regardless of status —
+    // so they can see their own resolved items too. Otherwise, the normal
+    // browse view explicitly excludes CLAIMED items, since a resolved item
+    // has nothing left to browse.
+    suspend fun getItems(postType: PostType, ownerUserId: String? = null): NetworkResult<List<Item>> =
         withContext(Dispatchers.IO) {
             try {
-                // PostgREST equality filter, e.g. post_type=eq.FOUND
-                val filter = "eq.${postType.name}"
-                val response = api.getItems(postType = filter)
+                val typeFilter = "eq.${postType.name}"
+                val ownerFilter = ownerUserId?.let { "eq.$it" }
+                // Only exclude CLAIMED items in the normal (non-My-Posts) view.
+                val statusFilter = if (ownerUserId == null) "eq.UNCLAIMED" else null
+
+                val response = api.getItems(
+                    postType = typeFilter,
+                    userId = ownerFilter,
+                    status = statusFilter
+                )
                 if (response.isSuccessful && response.body() != null) {
-                    // Convert each raw network DTO into a strict domain Item.
-                    val items = response.body()!!.map { it.toDomain() }
-                    NetworkResult.Success(items)
+                    NetworkResult.Success(response.body()!!.map { it.toDomain() })
                 } else {
                     NetworkResult.Error("Server error: ${response.code()}")
                 }
@@ -35,9 +44,6 @@ class ItemRepository {
             }
         }
 
-    // Posts a new item; Supabase returns the created row, so we read its id.
-// userId must be the real logged-in account's ID (from SessionManager),
-// since RLS requires it to match auth.uid() for the insert to succeed.
     suspend fun createItem(request: CreateItemRequest): NetworkResult<Int> =
         withContext(Dispatchers.IO) {
             try {
@@ -52,22 +58,45 @@ class ItemRepository {
             }
         }
 
-    // Submits a claim (or "I have this item" report) on an item.
     suspend fun createClaim(request: CreateClaimRequest): NetworkResult<Unit> =
         withContext(Dispatchers.IO) {
             try {
                 val response = api.createClaim(request)
-                if (response.isSuccessful) {
-                    NetworkResult.Success(Unit)
+                if (response.isSuccessful) NetworkResult.Success(Unit)
+                else NetworkResult.Error("Failed to submit claim: ${response.code()}")
+            } catch (e: Exception) {
+                NetworkResult.Error("Could not reach the server. Is it running?")
+            }
+        }
+
+    suspend fun getIncomingClaims(userId: String): NetworkResult<List<NotificationClaim>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = api.getIncomingClaims(ownerFilter = "eq.$userId")
+                if (response.isSuccessful && response.body() != null) {
+                    NetworkResult.Success(response.body()!!.map { it.toNotificationClaim() })
                 } else {
-                    NetworkResult.Error("Failed to submit claim: ${response.code()}")
+                    NetworkResult.Error("Server error: ${response.code()}")
                 }
             } catch (e: Exception) {
                 NetworkResult.Error("Could not reach the server. Is it running?")
             }
         }
 
-    // Approves a claim atomically (see approve_claim RPC in HanAppApi).
+    suspend fun getOutgoingClaims(userId: String): NetworkResult<List<NotificationClaim>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = api.getOutgoingClaims(claimantFilter = "eq.$userId")
+                if (response.isSuccessful && response.body() != null) {
+                    NetworkResult.Success(response.body()!!.map { it.toNotificationClaim() })
+                } else {
+                    NetworkResult.Error("Server error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                NetworkResult.Error("Could not reach the server. Is it running?")
+            }
+        }
+
     suspend fun approveClaim(claimId: Long): NetworkResult<Unit> =
         withContext(Dispatchers.IO) {
             try {
@@ -79,7 +108,6 @@ class ItemRepository {
             }
         }
 
-    // Rejects a single claim directly.
     suspend fun rejectClaim(claimId: Long): NetworkResult<Unit> =
         withContext(Dispatchers.IO) {
             try {

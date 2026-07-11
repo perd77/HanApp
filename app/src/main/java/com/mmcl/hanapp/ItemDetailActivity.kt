@@ -15,8 +15,9 @@ import com.mmcl.hanapp.ui.model.ItemStatus
 
 // Shows full details for one item, with a Claim / "I Have This Item" button
 // shown only when the viewer is NOT the original poster and the item is
-// still unclaimed. Button text and the claim form's copy differ based on
-// whether this is a FOUND item (Claim) or a LOST post (I Have This Item).
+// still unclaimed. A plain-English banner above the button clarifies exactly
+// what the action means, so it's unambiguous regardless of which tab the
+// viewer arrived from.
 class ItemDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityItemDetailBinding
@@ -35,8 +36,6 @@ class ItemDetailActivity : AppCompatActivity() {
         private const val EXTRA_OWNER_USER_ID = "extra_owner_user_id"
         private const val EXTRA_POST_TYPE = "extra_post_type"
 
-        // Builds the launch Intent from an Item, so callers never have to
-        // manually manage extra keys themselves.
         fun newIntent(context: Context, item: Item, ownerUserId: String?): Intent {
             return Intent(context, ItemDetailActivity::class.java).apply {
                 putExtra(EXTRA_ITEM_ID, item.id)
@@ -54,8 +53,6 @@ class ItemDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Listens for a result from SubmitClaimActivity. If the claim was
-    // submitted successfully, show a confirmation and close this screen too.
     private val submitClaimLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -75,8 +72,6 @@ class ItemDetailActivity : AppCompatActivity() {
         binding.buttonDetailClose.setOnClickListener { finish() }
     }
 
-    // Populates every view from the Intent extras and decides whether to
-    // show the Claim/"I Have This Item" button or the "you posted this" notice.
     private fun bindItemData() {
         val name = intent.getStringExtra(EXTRA_NAME).orEmpty()
         val description = intent.getStringExtra(EXTRA_DESCRIPTION).orEmpty()
@@ -100,8 +95,6 @@ class ItemDetailActivity : AppCompatActivity() {
             binding.imageDetailPhoto.load(photoUrl)
         }
 
-        // Status badge only makes sense for FOUND items — LOST posts hide it,
-        // matching the same rule used on the feed cards.
         if (postType == "FOUND") {
             binding.badgeDetailStatus.visibility = View.VISIBLE
             if (status == ItemStatus.CLAIMED.name) {
@@ -117,16 +110,17 @@ class ItemDetailActivity : AppCompatActivity() {
             binding.badgeDetailStatus.visibility = View.GONE
         }
 
-        // Button text differs: claiming a found item vs. reporting you have
-        // a lost item. Both open the same submission form underneath.
-        binding.buttonClaim.text = if (postType == "LOST") {
-            getString(R.string.detail_have_item_button)
+        // Button text AND the plain-English banner above it both switch
+        // based on post type, so the intended action is stated twice,
+        // in two different ways, removing any ambiguity.
+        if (postType == "LOST") {
+            binding.buttonClaim.text = getString(R.string.detail_have_item_button)
+            binding.textContextBanner.text = getString(R.string.detail_context_lost)
         } else {
-            getString(R.string.detail_claim_button)
+            binding.buttonClaim.text = getString(R.string.detail_claim_button)
+            binding.textContextBanner.text = getString(R.string.detail_context_found)
         }
 
-        // Only the viewer who is NOT the poster, and only while still
-        // unclaimed, gets the option to claim/report this item.
         val currentUserId = session.getUserId()
         val isOwner = currentUserId != null && currentUserId == ownerUserId
         val isClaimable = status == ItemStatus.UNCLAIMED.name
@@ -134,10 +128,12 @@ class ItemDetailActivity : AppCompatActivity() {
         when {
             isOwner -> {
                 binding.buttonClaim.visibility = View.GONE
+                binding.layoutContextBanner.visibility = View.GONE
                 binding.textOwnPostNotice.visibility = View.VISIBLE
             }
             isClaimable -> {
                 binding.buttonClaim.visibility = View.VISIBLE
+                binding.layoutContextBanner.visibility = View.VISIBLE
                 binding.textOwnPostNotice.visibility = View.GONE
                 binding.buttonClaim.setOnClickListener {
                     submitClaimLauncher.launch(
@@ -146,8 +142,8 @@ class ItemDetailActivity : AppCompatActivity() {
                 }
             }
             else -> {
-                // Already claimed by someone else — hide both actions.
                 binding.buttonClaim.visibility = View.GONE
+                binding.layoutContextBanner.visibility = View.GONE
                 binding.textOwnPostNotice.visibility = View.GONE
             }
         }

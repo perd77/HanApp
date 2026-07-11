@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textOutgoingItemName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp"
+        android:fontFamily="@font/inter_semibold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/badgeOutgoingStatus"
+        tools:text="Lost AirPods Case" />
+
+    <TextView
+        android:id="@+id/badgeOutgoingStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_badge_unclaimed"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:textSize="11sp"
+        android:fontFamily="@font/inter_medium"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Pending" />
+
+    <TextView
+        android:id="@+id/textOutgoingTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        android:fontFamily="@font/inter_regular"
+        app:layout_constraintTop_toBottomOf="@id/textOutgoingItemName"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Submitted 3h ago" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

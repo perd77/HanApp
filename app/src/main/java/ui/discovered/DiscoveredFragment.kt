@@ -11,27 +11,40 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mmcl.hanapp.ItemDetailActivity
+import com.mmcl.hanapp.data.session.SessionManager
 import com.mmcl.hanapp.databinding.FragmentDiscoveredBinding
 import com.mmcl.hanapp.ui.adapter.GridSpacingItemDecoration
 import com.mmcl.hanapp.ui.adapter.ItemAdapter
 import com.mmcl.hanapp.ui.feed.FeedViewModel
 import com.mmcl.hanapp.ui.feed.FeedViewModelFactory
+import com.mmcl.hanapp.ui.home.TabFilterViewModel
 import com.mmcl.hanapp.ui.model.PostType
 import com.mmcl.hanapp.util.NetworkResult
 import kotlinx.coroutines.launch
-import com.mmcl.hanapp.ItemDetailActivity
 
-// The "Discovered" tab: shows the shared feed of FOUND items pulled live from the backend.
+// The "Discovered" tab: shows the shared feed of FOUND items pulled live from
+// the backend. Supports a "My Posts" mode, toggled by re-tapping the tab in
+// HomeFragment, via the shared TabFilterViewModel.
 class DiscoveredFragment : Fragment() {
 
     private var _binding: FragmentDiscoveredBinding? = null
     private val binding get() = _binding!!
 
-    // ViewModel is scoped to this fragment and survives view recreation.
-    // The factory passes PostType.FOUND so this feed only loads found items.
+    private lateinit var session: SessionManager
+
+    // FeedViewModel is scoped to this fragment; the factory passes FOUND
+    // plus the logged-in user's ID (needed for My Posts filtering).
     private val viewModel: FeedViewModel by viewModels {
-        FeedViewModelFactory(PostType.FOUND)
+        FeedViewModelFactory(PostType.FOUND, SessionManager(requireContext()).getUserId())
     }
+
+    // TabFilterViewModel is scoped to the PARENT fragment (HomeFragment), so
+    // this fragment and HomeFragment share the exact same instance — that's
+    // what lets a tap on the tab in HomeFragment affect this feed.
+    private val tabFilterViewModel: TabFilterViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }
+    )
 
     private lateinit var itemAdapter: ItemAdapter
 
@@ -45,6 +58,7 @@ class DiscoveredFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDiscoveredBinding.inflate(inflater, container, false)
+        session = SessionManager(requireContext())
         return binding.root
     }
 
@@ -52,19 +66,20 @@ class DiscoveredFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         observeFeed()
+        observeMyPostsFilter()
 
-        // Pull-to-refresh re-requests the feed from the server.
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadItems()
         }
+
+        // Tapping the pill itself is an explicit "turn this off" action.
+        binding.pillMyPosts.setOnClickListener {
+            tabFilterViewModel.clearDiscovered()
+        }
     }
 
-    // Configures the 2-column grid and its spacing.
     private fun setupRecyclerView() {
         itemAdapter = ItemAdapter { selectedItem ->
-            // Opens the full detail screen, passing the item's data and its
-            // real poster ID so the detail screen can decide whether to show
-            // the Claim button or the "you posted this" notice.
             val intent = ItemDetailActivity.newIntent(
                 requireContext(), selectedItem, selectedItem.posterUserId
             )
@@ -79,9 +94,20 @@ class DiscoveredFragment : Fragment() {
         }
     }
 
-    // Observes the ViewModel's state and updates the UI for each case.
-    // repeatOnLifecycle ensures we only collect while the view is at least STARTED,
-    // automatically pausing when the fragment is backgrounded — no wasted work, no leaks.
+    // Watches the shared "My Posts" toggle for this tab. When it flips, tells
+    // the feed's own ViewModel to re-fetch scoped (or not) to the owner,
+    // and shows/hides the pill indicator.
+    private fun observeMyPostsFilter() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                tabFilterViewModel.discoveredMyPostsOnly.collect { enabled ->
+                    viewModel.setMyPostsOnly(enabled)
+                    binding.pillMyPosts.visibility = if (enabled) View.VISIBLE else View.GONE
+                }
+            }
+        }
+    }
+
     private fun observeFeed() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

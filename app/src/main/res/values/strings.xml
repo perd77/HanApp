@@ -64,11 +64,31 @@
     <string name="detail_have_item_button">I Have This Item</string>
 
     <string name="claim_contact_hint">Contact number</string>
-    <string name="claim_proof_hint">Proof / description (how do you know it\'s yours?)</string>
+    <string name="claim_proof_hint">Proof / description</string>
     <string name="claim_submit_button">Submit</string>
     <string name="claim_title_found">Claim This Item</string>
     <string name="claim_title_lost">I Have This Item</string>
     <string name="claim_subtitle_found">Submit your contact info and proof so the poster can verify it\'s yours.</string>
     <string name="claim_subtitle_lost">Let them know you found it and how to reach you.</string>
     <string name="claim_success_toast">Your claim was submitted!</string>
+
+    <string name="notification_claimant_format">Claimed by %1$s · %2$s</string>
+    <string name="notification_submitted_format">Submitted %1$s</string>
+    <string name="notification_approve">Approve</string>
+    <string name="notification_reject">Reject</string>
+    <string name="notification_approved">Approved</string>
+    <string name="notification_rejected">Rejected</string>
+    <string name="notification_pending">Pending</string>
+    <string name="notification_section_incoming">Claims on Your Posts</string>
+    <string name="notification_section_outgoing">Your Claims</string>
+    <string name="notification_empty_incoming">No claims on your posts yet</string>
+    <string name="notification_empty_outgoing">You haven\'t submitted any claims yet</string>
+
+    <string name="detail_context_found">You lost this item and you\'re trying to claim it\'s yours.</string>
+    <string name="detail_context_lost">You have this item and you\'re trying to bring it back to its owner.</string>
+
+    <string name="notification_confirm_mine">This Is Mine</string>
+    <string name="notification_not_mine">Not Mine</string>
+
+    <string name="pill_my_posts">My Posts · tap to clear</string>
 </resources>

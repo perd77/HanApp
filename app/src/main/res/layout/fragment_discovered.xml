@@ -1,16 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+<!-- Wraps the feed in a FrameLayout so the "My Posts" pill can float over
+     the RecyclerView content, rather than taking up its own row. -->
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewDiscovered"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="12dp"
-        android:paddingBottom="24dp" />
+        android:layout_height="match_parent">
 
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewDiscovered"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- "My Posts" indicator pill: low-opacity oval, floats top-center over
+         the feed, tappable to turn the filter off. Hidden by default. -->
+    <TextView
+        android:id="@+id/pillMyPosts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_my_posts_pill"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/pill_my_posts"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:fontFamily="@font/inter_medium"
+        android:visibility="gone"
+        android:elevation="4dp" />
+
+</FrameLayout>

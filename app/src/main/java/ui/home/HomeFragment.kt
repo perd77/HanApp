@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter as ViewPagerAdapter
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mmcl.hanapp.R
 import com.mmcl.hanapp.data.session.SessionManager
@@ -14,8 +16,9 @@ import com.mmcl.hanapp.databinding.FragmentHomeBinding
 import com.mmcl.hanapp.ui.discovered.DiscoveredFragment
 import com.mmcl.hanapp.ui.finding.FindingFragment
 
-// The Home destination: hosts the header (title + logout) and the two feed tabs.
-// This is the content that previously lived directly in MainActivity.
+// The Home destination: hosts the header (title + logout) and the two feed
+// tabs. Also owns TabFilterViewModel, shared with both child feed fragments,
+// so re-tapping the active tab can toggle "My Posts" mode inside it.
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -23,13 +26,17 @@ class HomeFragment : Fragment() {
 
     private lateinit var session: SessionManager
 
+    // Scoped to THIS fragment (Home) — DiscoveredFragment and FindingFragment
+    // access the same instance by scoping to requireParentFragment(), which
+    // resolves to this HomeFragment. That shared instance is what connects
+    // a tap here to a filter change inside whichever child is showing.
+    private val tabFilterViewModel: TabFilterViewModel by viewModels()
+
     private val tabTitles = arrayOf("Discovered", "Finding")
 
     companion object {
         private const val ARG_INITIAL_TAB = "initial_tab"
 
-        // initialTab: 0 = Discovered, 1 = Finding. Defaults to 0 so existing
-        // calls to newInstance() without an argument still open on Discovered.
         fun newInstance(initialTab: Int = 0): HomeFragment {
             return HomeFragment().apply {
                 arguments = Bundle().apply { putInt(ARG_INITIAL_TAB, initialTab) }
@@ -52,15 +59,14 @@ class HomeFragment : Fragment() {
         setupTabs()
         setupLogout()
         setupGreeting()
+        setupTabReselectListener()
     }
 
-    // Shows "Hi, {username}!" under the logo using the real logged-in identity.
     private fun setupGreeting() {
         val username = session.getUsername().orEmpty()
         binding.textUserGreeting.text = getString(R.string.home_greeting, username)
     }
 
-    // Connects the tab strip to the swipeable pager holding the two feeds.
     private fun setupTabs() {
         binding.viewPager.adapter = FeedPagerAdapter(this)
         binding.viewPager.offscreenPageLimit = 1
@@ -69,20 +75,37 @@ class HomeFragment : Fragment() {
             tab.text = tabTitles[position]
         }.attach()
 
-        // If opened right after posting, jump straight to the matching tab
-        // (e.g. a LOST post lands on Finding instead of the default Discovered).
         val initialTab = arguments?.getInt(ARG_INITIAL_TAB, 0) ?: 0
         if (initialTab != 0) {
             binding.viewPager.setCurrentItem(initialTab, false)
         }
     }
 
-    // Wires the header logout icon to a confirmation dialog.
+    // Detects a tap on the ALREADY-selected tab (not a normal tab switch) and
+    // toggles that tab's "My Posts" filter via the shared TabFilterViewModel.
+    private fun setupTabReselectListener() {
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                // Normal tab switch — nothing to do here, ViewPager2 handles it.
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                // No action needed.
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                when (tab.position) {
+                    0 -> tabFilterViewModel.toggleDiscovered()
+                    1 -> tabFilterViewModel.toggleFinding()
+                }
+            }
+        })
+    }
+
     private fun setupLogout() {
         binding.buttonLogout.setOnClickListener { showLogoutConfirmation() }
     }
 
-    // Confirms before logging out, so an accidental tap doesn't wipe the session.
     private fun showLogoutConfirmation() {
         AlertDialog.Builder(requireContext(), R.style.HanAppAlertDialog)
             .setTitle(R.string.logout_dialog_title)
@@ -92,7 +115,6 @@ class HomeFragment : Fragment() {
             .show()
     }
 
-    // Clears the session and asks the host activity to return to login.
     private fun performLogout() {
         session.logout()
         (activity as? MainActivityCallback)?.onLoggedOut()
@@ -103,7 +125,6 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    // Supplies the two feed fragments to the pager (Discovered + Finding).
     private inner class FeedPagerAdapter(fragment: Fragment) : ViewPagerAdapter(fragment) {
         override fun getItemCount(): Int = tabTitles.size
         override fun createFragment(position: Int): Fragment = when (position) {
@@ -113,8 +134,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    // Lets HomeFragment tell MainActivity to handle logout navigation, without
-    // HomeFragment needing to know the details of activity/intent handling.
     interface MainActivityCallback {
         fun onLoggedOut()
     }
