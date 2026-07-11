@@ -26,7 +26,15 @@ class HomeFragment : Fragment() {
     private val tabTitles = arrayOf("Discovered", "Finding")
 
     companion object {
-        fun newInstance() = HomeFragment()
+        private const val ARG_INITIAL_TAB = "initial_tab"
+
+        // initialTab: 0 = Discovered, 1 = Finding. Defaults to 0 so existing
+        // calls to newInstance() without an argument still open on Discovered.
+        fun newInstance(initialTab: Int = 0): HomeFragment {
+            return HomeFragment().apply {
+                arguments = Bundle().apply { putInt(ARG_INITIAL_TAB, initialTab) }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -43,6 +51,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupTabs()
         setupLogout()
+        setupGreeting()
+    }
+
+    // Shows "Hi, {username}!" under the logo using the real logged-in identity.
+    private fun setupGreeting() {
+        val username = session.getUsername().orEmpty()
+        binding.textUserGreeting.text = getString(R.string.home_greeting, username)
     }
 
     // Connects the tab strip to the swipeable pager holding the two feeds.
@@ -53,6 +68,13 @@ class HomeFragment : Fragment() {
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = tabTitles[position]
         }.attach()
+
+        // If opened right after posting, jump straight to the matching tab
+        // (e.g. a LOST post lands on Finding instead of the default Discovered).
+        val initialTab = arguments?.getInt(ARG_INITIAL_TAB, 0) ?: 0
+        if (initialTab != 0) {
+            binding.viewPager.setCurrentItem(initialTab, false)
+        }
     }
 
     // Wires the header logout icon to a confirmation dialog.

@@ -19,6 +19,7 @@ import com.mmcl.hanapp.ui.feed.FeedViewModelFactory
 import com.mmcl.hanapp.ui.model.PostType
 import com.mmcl.hanapp.util.NetworkResult
 import kotlinx.coroutines.launch
+import com.mmcl.hanapp.ItemDetailActivity
 
 // The "Discovered" tab: shows the shared feed of FOUND items pulled live from the backend.
 class DiscoveredFragment : Fragment() {
@@ -61,7 +62,13 @@ class DiscoveredFragment : Fragment() {
     // Configures the 2-column grid and its spacing.
     private fun setupRecyclerView() {
         itemAdapter = ItemAdapter { selectedItem ->
-            // TODO: navigate to item detail screen once it exists
+            // Opens the full detail screen, passing the item's data and its
+            // real poster ID so the detail screen can decide whether to show
+            // the Claim button or the "you posted this" notice.
+            val intent = ItemDetailActivity.newIntent(
+                requireContext(), selectedItem, selectedItem.posterUserId
+            )
+            startActivity(intent)
         }
 
         val spacingPx = (12 * resources.displayMetrics.density).toInt()

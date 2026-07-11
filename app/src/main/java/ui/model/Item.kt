@@ -33,7 +33,10 @@ data class Item(
     val status: ItemStatus,
     val postType: PostType, // FOUND (Discovered feed) or LOST (Finding feed)
     val timestampLabel: String, // pre-formatted display string, e.g. "2h ago"
+    val posterUserId: String?, // the real account ID of whoever posted this, for ownership checks
+    val postedBy: String, // display name of whoever posted this item
     val photoUrl: String? = null // nullable because the photo upload is optional per the system plan
+
 ) {
     // Runs automatically every time an Item is created.
     // Blocks bad data (blank name, oversized text) before it ever reaches the UI,

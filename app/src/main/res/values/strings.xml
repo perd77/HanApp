@@ -26,4 +26,49 @@
     <string name="signup_create_account">Create Account</string>
     <string name="signup_go_to_login">Already have an account? Log in</string>
     <string name="signup_success">Account created! Please log in.</string>
+    <string-array name="category_options">
+        <item>Electronics</item>
+        <item>Bag</item>
+        <item>ID/Cards</item>
+        <item>Clothing</item>
+        <item>Keys</item>
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="location_options">
+        <item>Building A</item>
+        <item>Canteen</item>
+        <item>Library</item>
+        <item>Gym</item>
+        <item>Others</item>
+    </string-array>
+
+    <string name="post_close_description">Close</string>
+    <string name="post_title">Create a Post</string>
+    <string name="post_type_found">Found Item</string>
+    <string name="post_type_lost">Lost Item</string>
+    <string name="post_name_hint">Item name</string>
+    <string name="post_category_hint">Category</string>
+    <string name="post_location_hint">Location</string>
+    <string name="post_description_hint">Description</string>
+    <string name="post_submit">Post</string>
+
+    <string name="post_add_photo">Add Photo (optional)</string>
+    <string name="post_photo_preview_description">Selected photo preview</string>
+    <string name="post_remove_photo_description">Remove selected photo</string>
+    <string name="home_greeting">Hi, %1$s!</string>
+
+    <string name="detail_claim_button">Claim This Item</string>
+    <string name="detail_own_post_notice">You posted this item</string>
+    <string name="detail_posted_by_format">Posted by %1$s · %2$s</string>
+    <string name="detail_have_item_button">I Have This Item</string>
+
+    <string name="claim_contact_hint">Contact number</string>
+    <string name="claim_proof_hint">Proof / description (how do you know it\'s yours?)</string>
+    <string name="claim_submit_button">Submit</string>
+    <string name="claim_title_found">Claim This Item</string>
+    <string name="claim_title_lost">I Have This Item</string>
+    <string name="claim_subtitle_found">Submit your contact info and proof so the poster can verify it\'s yours.</string>
+    <string name="claim_subtitle_lost">Let them know you found it and how to reach you.</string>
+    <string name="claim_success_toast">Your claim was submitted!</string>
 </resources>

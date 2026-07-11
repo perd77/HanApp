@@ -35,6 +35,10 @@ fun ItemDto.toDomain(): Item {
             "LOST" -> PostType.LOST
             else -> PostType.FOUND
         },
+        // The real account ID of whoever posted this — used to check whether
+        // the current viewer is the owner (e.g. to hide/show the Claim button).
+        posterUserId = userId,
+        postedBy = postedBy,
         timestampLabel = formatTimestamp(createdAt),
         photoUrl = photoPath
     )

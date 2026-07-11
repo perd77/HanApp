@@ -39,6 +39,26 @@ object InputValidator {
         }
     }
 
+    // Validates the item name field on the post form.
+    fun validateItemName(rawInput: String): Result {
+        val name = rawInput.trim()
+        return when {
+            name.isEmpty() -> Result.Invalid("Item name is required")
+            name.length > 60 -> Result.Invalid("Item name must be 60 characters or fewer")
+            else -> Result.Valid
+        }
+    }
+
+    // Validates the description field on the post form.
+    fun validateDescription(rawInput: String): Result {
+        val description = rawInput.trim()
+        return when {
+            description.isEmpty() -> Result.Invalid("Description is required")
+            description.length > 300 -> Result.Invalid("Description must be 300 characters or fewer")
+            else -> Result.Valid
+        }
+    }
+
     private const val MIN_PASSWORD_LENGTH = 6
 
     private const val MIN_NAME_LENGTH = 2

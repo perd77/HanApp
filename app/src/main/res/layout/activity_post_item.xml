@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/off_white_surface"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <!-- Header row: close button + screen title -->
+        <ImageButton
+            android:id="@+id/buttonClose"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_close"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/post_close_description"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/post_title"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:fontFamily="@font/inter_semibold"
+            app:layout_constraintTop_toBottomOf="@id/buttonClose"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- FOUND / LOST toggle: decides which feed this post lands in. -->
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleGroupType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:layout_constraintTop_toBottomOf="@id/textTitle">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonTypeFound"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/post_type_found"
+                android:textAllCaps="false"
+                app:strokeColor="@color/sky_blue" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonTypeLost"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/post_type_lost"
+                android:textAllCaps="false"
+                app:strokeColor="@color/sky_blue" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <!-- Photo picker: tappable box that opens the gallery picker.
+             Shows a placeholder until an image is chosen, then swaps to a preview
+             with a small remove (X) button. Preview-only — nothing is uploaded. -->
+        <FrameLayout
+            android:id="@+id/photoPickerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_photo_picker"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintTop_toBottomOf="@id/toggleGroupType">
+
+            <!-- Placeholder shown when no photo is selected yet. -->
+            <LinearLayout
+                android:id="@+id/photoPlaceholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_photo"
+                    app:tint="@color/sky_blue_dark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/post_add_photo"
+                    android:textColor="@color/sky_blue_dark"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/inter_medium" />
+            </LinearLayout>
+
+            <!-- Preview of the selected image. Hidden until a photo is picked. -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imagePhotoPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:contentDescription="@string/post_photo_preview_description"
+                app:shapeAppearanceOverlay="@style/RoundedImageCorners" />
+
+            <!-- Small remove button, top-end corner, only visible with a preview. -->
+            <ImageButton
+                android:id="@+id/buttonRemovePhoto"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:src="@drawable/ic_close"
+                android:background="@drawable/bg_remove_photo_circle"
+                android:visibility="gone"
+                android:contentDescription="@string/post_remove_photo_description"
+                app:tint="@color/white" />
+
+        </FrameLayout>
+
+        <!-- Item name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayoutName"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="@string/post_name_hint"
+            app:boxStrokeColor="@color/sky_blue"
+            app:hintTextColor="@color/sky_blue"
+            app:layout_constraintTop_toBottomOf="@id/photoPickerContainer">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Category dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayoutCategory"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/post_category_hint"
+            app:boxStrokeColor="@color/sky_blue"
+            app:hintTextColor="@color/sky_blue"
+            app:layout_constraintTop_toBottomOf="@id/inputLayoutName">
+
+            <AutoCompleteTextView
+                android:id="@+id/dropdownCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Location dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayoutLocation"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/post_location_hint"
+            app:boxStrokeColor="@color/sky_blue"
+            app:hintTextColor="@color/sky_blue"
+            app:layout_constraintTop_toBottomOf="@id/inputLayoutCategory">
+
+            <AutoCompleteTextView
+                android:id="@+id/dropdownLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Description -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayoutDescription"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/post_description_hint"
+            app:boxStrokeColor="@color/sky_blue"
+            app:hintTextColor="@color/sky_blue"
+            app:layout_constraintTop_toBottomOf="@id/inputLayoutLocation">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="3"
+                android:gravity="top"
+                android:fontFamily="@font/inter_regular" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Submit -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/post_submit"
+            android:textAllCaps="false"
+            android:fontFamily="@font/inter_semibold"
+            app:backgroundTint="@color/sky_blue"
+            app:cornerRadius="14dp"
+            app:layout_constraintTop_toBottomOf="@id/inputLayoutDescription" />
+
+        <ProgressBar
+            android:id="@+id/progressSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/buttonSubmit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -4,6 +4,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/off_white_surface">
@@ -22,7 +23,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="20dp"
             android:paddingEnd="12dp"
-            android:paddingTop="32dp"
+            android:paddingTop="28dp"
             android:paddingBottom="16dp">
 
             <TextView
@@ -30,17 +31,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
                 android:text="@string/app_name"
                 android:textColor="@color/white"
                 android:textSize="40sp"
                 android:letterSpacing="0.01"
                 app:fontFamily="@font/chango_regular" />
 
+            <!-- Greeting shown under the logo once a real username is available. -->
+            <TextView
+                android:id="@+id/textUserGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textAppTitle"
+                android:layout_alignStart="@id/textAppTitle"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/sky_blue_deep_text"
+                android:textSize="13sp"
+                android:fontFamily="@font/inter_medium"
+                tools:text="Hi, Ray!" />
+
             <ImageButton
                 android:id="@+id/buttonLogout"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_logout"

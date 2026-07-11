@@ -2,7 +2,7 @@ package com.mmcl.hanapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -18,6 +18,19 @@ class MainActivity : AppCompatActivity(), HomeFragment.MainActivityCallback {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var session: SessionManager
+
+    // Launches PostItemActivity and listens for its result. If a post was
+    // created successfully, Home is reloaded fresh so both feeds show the
+    // new item immediately — no manual pull-to-refresh needed.
+    private val postItemLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val postType = result.data?.getStringExtra(PostItemActivity.EXTRA_POST_TYPE)
+            val tabToShow = if (postType == "LOST") 1 else 0
+            showFragment(HomeFragment.newInstance(tabToShow))
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +55,6 @@ class MainActivity : AppCompatActivity(), HomeFragment.MainActivityCallback {
         setupFab()
     }
 
-    // Switches the content area based on which bottom-bar item is tapped.
     // Switches the content area based on which bottom-bar icon is tapped.
     private fun setupBottomNav() {
         binding.navHome.setOnClickListener {
@@ -53,12 +65,11 @@ class MainActivity : AppCompatActivity(), HomeFragment.MainActivityCallback {
         }
     }
 
-    // The docked "+" opens the post-creation flow. Placeholder for now until
-    // the post form screen exists.
+    // The docked "+" opens the post-creation flow via the result launcher,
+    // so we know when a post was successfully created and can refresh Home.
     private fun setupFab() {
         binding.fabAdd.setOnClickListener {
-            // TODO: open the Post Item form once it's built.
-            Toast.makeText(this, "Post form coming soon", Toast.LENGTH_SHORT).show()
+            postItemLauncher.launch(Intent(this, PostItemActivity::class.java))
         }
     }
 
