@@ -16,17 +16,11 @@ class ItemRepository {
 
     private val api = ApiClient.api
 
-    // Fetches a feed filtered by post type. If ownerUserId is provided (My
-    // Posts mode), shows ALL of that user's posts regardless of status —
-    // so they can see their own resolved items too. Otherwise, the normal
-    // browse view explicitly excludes CLAIMED items, since a resolved item
-    // has nothing left to browse.
     suspend fun getItems(postType: PostType, ownerUserId: String? = null): NetworkResult<List<Item>> =
         withContext(Dispatchers.IO) {
             try {
                 val typeFilter = "eq.${postType.name}"
                 val ownerFilter = ownerUserId?.let { "eq.$it" }
-                // Only exclude CLAIMED items in the normal (non-My-Posts) view.
                 val statusFilter = if (ownerUserId == null) "eq.UNCLAIMED" else null
 
                 val response = api.getItems(
@@ -38,6 +32,29 @@ class ItemRepository {
                     NetworkResult.Success(response.body()!!.map { it.toDomain() })
                 } else {
                     NetworkResult.Error("Server error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                NetworkResult.Error("Could not reach the server. Is it running?")
+            }
+        }
+
+    // Searches by item name across both FOUND and LOST posts. Blank queries
+    // return an empty list without hitting the network at all — there's
+    // nothing meaningful to search for yet.
+    suspend fun searchItems(query: String): NetworkResult<List<Item>> =
+        withContext(Dispatchers.IO) {
+            val trimmed = query.trim()
+            if (trimmed.isEmpty()) return@withContext NetworkResult.Success(emptyList())
+
+            try {
+                // PostgREST ilike pattern: wrapping the term in * makes it a
+                // "contains" match rather than "starts with" or exact.
+                val nameFilter = "ilike.*$trimmed*"
+                val response = api.searchItems(nameFilter = nameFilter)
+                if (response.isSuccessful && response.body() != null) {
+                    NetworkResult.Success(response.body()!!.map { it.toDomain() })
+                } else {
+                    NetworkResult.Error("Search failed: ${response.code()}")
                 }
             } catch (e: Exception) {
                 NetworkResult.Error("Could not reach the server. Is it running?")

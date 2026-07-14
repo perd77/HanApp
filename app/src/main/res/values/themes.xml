@@ -17,4 +17,14 @@
     </style>
 
     <style name="Theme.HanApp" parent="Base.Theme.HanApp" />
+
+    <!-- System-level splash screen theme. Shown automatically by Android the
+         instant the app launches, before LoginActivity finishes its first
+         frame — this replaces the default green-robot splash with our own
+         branding (sky-blue background + the launcher icon). -->
+    <style name="Theme.HanApp.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/sky_blue</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.HanApp</item>
+    </style>
 </resources>

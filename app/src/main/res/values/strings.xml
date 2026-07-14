@@ -22,7 +22,7 @@
     <color name="bottom_bar_icon">#FFFFFF</color>
     <string name="signup_tagline">Create your account</string>
     <string name="signup_username_hint">Username</string>
-    <string name="signup_password_hint">Password (min. 6 characters)</string>
+    <string name="signup_password_hint">Password (8+ chars, upper, lower, number, symbol)</string>
     <string name="signup_create_account">Create Account</string>
     <string name="signup_go_to_login">Already have an account? Log in</string>
     <string name="signup_success">Account created! Please log in.</string>
@@ -36,11 +36,13 @@
     </string-array>
 
     <string-array name="location_options">
-        <item>Building A</item>
-        <item>Canteen</item>
-        <item>Library</item>
+        <item>Bus Stop</item>
+        <item>Cafeteria</item>
+        <item>Einstein</item>
+        <item>ETY</item>
+        <item>Grandstand</item>
         <item>Gym</item>
-        <item>Others</item>
+        <item>Rizal</item>
     </string-array>
 
     <string name="post_close_description">Close</string>
@@ -91,4 +93,9 @@
     <string name="notification_not_mine">Not Mine</string>
 
     <string name="pill_my_posts">My Posts · tap to clear</string>
+
+    <string name="search_icon_description">Search items</string>
+    <string name="search_hint">Search by item name…</string>
+    <string name="search_empty_no_query">Start typing to search</string>
+    <string name="search_empty_no_results">No items match your search</string>
 </resources>

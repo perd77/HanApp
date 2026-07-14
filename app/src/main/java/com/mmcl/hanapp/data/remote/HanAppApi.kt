@@ -16,15 +16,23 @@ import retrofit2.http.Query
 // Endpoints against Supabase's auto-generated REST API (PostgREST).
 interface HanAppApi {
 
-    // GET a feed filtered by post type, optionally by owner (My Posts mode),
-    // and optionally by status. status is null by default and Retrofit omits
-    // it entirely when null — used to show ALL statuses in My Posts mode,
-    // versus the normal browse view which explicitly excludes CLAIMED items.
     @GET("items")
     suspend fun getItems(
         @Query("post_type") postType: String,
         @Query("user_id") userId: String? = null,
         @Query("status") status: String? = null,
+        @Query("order") order: String = "created_at.desc",
+        @Query("select") select: String = "*"
+    ): Response<List<ItemDto>>
+
+    // Searches by item name across BOTH post types at once (no post_type
+    // filter), matching only still-available items. "name" uses PostgREST's
+    // ilike operator for case-insensitive partial matching, passed in fully
+    // formed (e.g. "ilike.*backpack*") from the repository.
+    @GET("items")
+    suspend fun searchItems(
+        @Query("name") nameFilter: String,
+        @Query("status") status: String = "eq.UNCLAIMED",
         @Query("order") order: String = "created_at.desc",
         @Query("select") select: String = "*"
     ): Response<List<ItemDto>>

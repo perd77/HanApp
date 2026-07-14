@@ -15,6 +15,8 @@ import com.mmcl.hanapp.data.session.SessionManager
 import com.mmcl.hanapp.databinding.FragmentHomeBinding
 import com.mmcl.hanapp.ui.discovered.DiscoveredFragment
 import com.mmcl.hanapp.ui.finding.FindingFragment
+import android.content.Intent
+import com.mmcl.hanapp.SearchActivity
 
 // The Home destination: hosts the header (title + logout) and the two feed
 // tabs. Also owns TabFilterViewModel, shared with both child feed fragments,
@@ -60,6 +62,14 @@ class HomeFragment : Fragment() {
         setupLogout()
         setupGreeting()
         setupTabReselectListener()
+        setupSearch()
+    }
+
+    // Opens the global search screen when the header's search icon is tapped.
+    private fun setupSearch() {
+        binding.buttonSearch.setOnClickListener {
+            startActivity(Intent(requireContext(), SearchActivity::class.java))
+        }
     }
 
     private fun setupGreeting() {

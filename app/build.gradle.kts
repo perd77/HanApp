@@ -89,5 +89,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation(libs.androidx.core.splashscreen)
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
 }

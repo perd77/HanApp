@@ -10,6 +10,7 @@ import com.mmcl.hanapp.data.remote.dto.CreateClaimRequest
 import com.mmcl.hanapp.data.repository.ItemRepository
 import com.mmcl.hanapp.data.session.SessionManager
 import com.mmcl.hanapp.databinding.ActivitySubmitClaimBinding
+import com.mmcl.hanapp.util.InputValidator
 import com.mmcl.hanapp.util.NetworkResult
 import kotlinx.coroutines.launch
 
@@ -61,8 +62,9 @@ class SubmitClaimActivity : AppCompatActivity() {
         val contact = binding.editTextContact.text?.toString().orEmpty().trim()
         val proof = binding.editTextProof.text?.toString().orEmpty().trim()
 
-        if (contact.isEmpty()) {
-            binding.inputLayoutContact.error = "Contact number is required"
+        val contactResult = InputValidator.validateContactNumber(contact)
+        if (contactResult is InputValidator.Result.Invalid) {
+            binding.inputLayoutContact.error = contactResult.reason
             return
         }
         binding.inputLayoutContact.error = null

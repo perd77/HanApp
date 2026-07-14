@@ -10,6 +10,7 @@ import com.mmcl.hanapp.data.session.SessionManager
 import com.mmcl.hanapp.databinding.ActivityLoginBinding
 import com.mmcl.hanapp.util.NetworkResult
 import kotlinx.coroutines.launch
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 // Entry screen. Collects a username + password, authenticates against real
 // Supabase accounts, and stores the resulting session. If already logged in
@@ -21,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private val authRepository = AuthRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen() // must be called before super.onCreate()
         super.onCreate(savedInstanceState)
         session = SessionManager(this)
 

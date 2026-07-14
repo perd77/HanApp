@@ -121,7 +121,7 @@
         android:textSize="14sp"
         android:fontFamily="@font/inter_medium"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/progressLogin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
